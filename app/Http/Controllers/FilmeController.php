@@ -5,18 +5,21 @@ namespace App\Http\Controllers;
 use App\Services\FilmeService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Storage;
 use Str;
 
 class FilmeController extends Controller
 {
-    public function __construct(protected FilmeService $service){}
+    public function __construct(protected FilmeService $service)
+    {
+    }
 
 
     public function index()
     {
-        try{
+        try {
             $filmes = $this->service->getAllPaginated(1, 30);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return redirect()->route('filmes.index');
         }
         return Inertia::render('Filmes/Index', ['filmes' => $filmes]);
@@ -29,9 +32,9 @@ class FilmeController extends Controller
 
     public function show($id)
     {
-        try{
+        try {
             $filmes = $this->service->getOne($id);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return redirect()->route('filmes.index');
         }
         return Inertia::render('Filmes/show', ['filmes' => $filmes]);
@@ -39,45 +42,44 @@ class FilmeController extends Controller
 
     public function edit(int $id)
     {
-        try{
+        try {
             $filmes = $this->service->getOne($id);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return redirect()->route('filmes.index');
         }
         return Inertia::render('Filmes/create', ['filmes' => $filmes]);
     }
 
-    
+
     public function store(Request $request)
     {
         // Validação dos dados
-        $validatedData = $request->validate([
+        $dados = $request->validate([
             'titulo' => 'required|string|max:255',
             'sinopse' => 'required|string',
-            'capa' => 'required|url',
-            'video' => 'required|file|mimes:mp4,mkv,avi,flv|max:1024000', // Limite de 1GB (1024000 KB)
+            'capa' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'video' => 'required|file|mimes:mp4,mkv,avi,flv|max:3072000', // Limite de 3GB
         ]);
 
-        // Processar o upload do vídeo
         if ($request->hasFile('video') && $request->file('video')->isValid()) {
-            // Gerar nome único para o vídeo
             $videoName = Str::random(10) . '.' . $request->file('video')->getClientOriginalExtension();
-            
-            // Armazenar o vídeo no diretório 'videos'
             $videoPath = $request->file('video')->storeAs('videos', $videoName, 'public');
+            $dados['url_filme'] = $videoPath;
         } else {
             return response()->json(['error' => 'Arquivo de vídeo inválido ou não enviado'], 400);
         }
 
-        // Criar o filme no banco de dados
-        try{
-            $this->service->store([
-                'titulo' => $validatedData['titulo'],
-                'sinopse' => $validatedData['sinopse'],
-                'url_capa' => $validatedData['capa'],
-                'url_filme' => $videoPath, // Caminho para o vídeo
-            ]);
-        }catch(\Exception $e){
+        if ($request->hasFile('capa') && $request->file('capa')->isValid()) {
+            $capaName = Str::random(10) . '.' . $request->file('capa')->getClientOriginalExtension();
+            $capaPath = $request->file('capa')->storeAs('capas', $capaName, 'public');
+            $dados['url_capa'] = $capaPath;
+        } else {
+            return response()->json(['error' => 'Arquivo de vídeo inválido ou não enviado'], 400);
+        }
+
+        try {
+            $this->service->store($dados);
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage(), 'mensagem' => 'Erro ao cadastrar filme'], 500);
         }
 
@@ -87,20 +89,49 @@ class FilmeController extends Controller
 
     public function update(Request $request, $id)
     {
-        try{
-            $this->service->update($request->only('titulo', 'sinopse', 'url_capa', 'url_filme'), $id);
-        }catch(\Exception $e){
-            response()->json(['error' => $e->getMessage(), 'mensagem' => 'Erro ao atualizar filme']);
+        $dados = $request->validate([
+            'titulo' => 'required|string|max:255',
+            'sinopse' => 'required|string',
+            'capa' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'video' => 'nullable|file|mimes:mp4,mkv,avi,flv|max:3072000', // Limite de 3GB
+        ]);
+
+        $filme = $this->service->getOne($id);
+
+        if (!$filme) {
+            return response()->json(['error' => 'Filme não encontrado'], 404);
         }
 
-        return redirect()->route('filmes.index');
+        if ($request->hasFile('video') && $request->file('video')->isValid()) {
+            // Remover o vídeo antigo 
+            Storage::disk('public')->delete($filme->url_filme);
+            $videoName = Str::random(10) . '.' . $request->file('video')->getClientOriginalExtension();
+            $videoPath = $request->file('video')->storeAs('videos', $videoName, 'public');
+            $dados['url_filme'] = $videoPath;
+        }
+
+        if ($request->hasFile('capa') && $request->file('capa')->isValid()) {
+            // Remover a capa antiga 
+            Storage::disk('public')->delete($filme->url_capa);
+            $capaName = Str::random(10) . '.' . $request->file('capa')->getClientOriginalExtension();
+            $capaPath = $request->file('capa')->storeAs('capas', $capaName, 'public');
+            $dados['url_capa'] = $capaPath;
+        }
+
+        try {
+            $this->service->update($dados, $id);
+            return response()->json(['message' => 'Filme atualizado com sucesso!']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage(), 'mensagem' => 'Erro ao atualizar filme'], 500);
+        }
     }
+
 
     public function destroy($id)
     {
-        try{
+        try {
             $this->service->delete($id);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             response()->json(['error' => $e->getMessage(), 'mensagem' => 'Erro ao deletar filme']);
         }
 
@@ -109,11 +140,10 @@ class FilmeController extends Controller
 
     public function getAllPaginated($page, $size)
     {
-        try{
-            dd('asasda');
+        try {
             $filmes = $this->service->getAllPaginated($page, $size);
 
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage(), 'mensagem' => 'Erro ao buscar filmes']);
         }
 
@@ -124,9 +154,9 @@ class FilmeController extends Controller
     {
         $dados = $request->only('search');
 
-        try{
+        try {
             $filmes = $this->service->search($dados['search']);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage(), 'mensagem' => 'Erro ao buscar filmes']);
         }
 

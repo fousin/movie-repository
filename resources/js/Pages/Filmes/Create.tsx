@@ -12,31 +12,28 @@ export default function Create() {
     });
     const [loading, setLoading] = useState(false);
     const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [capaFile, setCapaFile] = useState<File | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, setFile: (file: File | null) => void) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            if (file.size > 1073741824) {  // 1GB = 1073741824 bytes
-                alert("O arquivo é muito grande. O tamanho máximo permitido é 1GB.");
-            } else {
-                setVideoFile(file);
-            }
+            setFile(file);
         }
     };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        if (!videoFile) {
-            alert("Por favor, selecione um arquivo de vídeo.");
+        if (!videoFile || !capaFile) {
+            alert("Por favor, selecione um arquivo de vídeo e uma capa.");
             return;
         }
 
         const formData = new FormData();
         formData.append('titulo', filme.titulo);
         formData.append('sinopse', filme.sinopse);
-        formData.append('capa', filme.url_capa);
+        formData.append('capa', capaFile);
         formData.append('video', videoFile);
 
         setLoading(true);
@@ -90,12 +87,12 @@ export default function Create() {
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="capa" className="block text-sm font-medium text-gray-700">URL da Capa</label>
+                    <label htmlFor="capa" className="block text-sm font-medium text-gray-700">Carregar Capa</label>
                     <input
-                        type="text"
+                        type="file"
                         id="capa"
-                        value={filme.url_capa}
-                        onChange={(e) => setFilme({ ...filme, url_capa: e.target.value })}
+                        onChange={(e) => handleFileChange(e, setCapaFile)}
+                        accept="image/*"
                         className="w-full p-2 border border-gray-300 rounded-md"
                         required
                     />
@@ -106,18 +103,15 @@ export default function Create() {
                     <input
                         type="file"
                         id="video"
-                        onChange={handleFileChange}
+                        onChange={(e) => handleFileChange(e, setVideoFile)}
                         accept="video/*"
                         className="w-full p-2 border border-gray-300 rounded-md"
                         required
                     />
                 </div>
 
-                {videoFile && (
-                    <div className="mb-4">
-                        <p className="text-sm text-gray-600">Arquivo Selecionado: {videoFile.name}</p>
-                    </div>
-                )}
+                {videoFile && <p className="text-sm text-gray-600">Vídeo: {videoFile.name}</p>}
+                {capaFile && <p className="text-sm text-gray-600">Capa: {capaFile.name}</p>}
 
                 {loading && (
                     <div className="mb-4">
