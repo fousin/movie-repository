@@ -11,12 +11,11 @@ Route::get('/user', function (Request $request) {
 Route::controller(FilmeController::class)->prefix('filmes')->name('filmes.')->group(function () {
 
     Route::get('/{id}', 'show')->name('show');
-
     Route::get('/all/{page}/{size}', 'getAllPaginated')->name('all');
     Route::post('/store', 'store')->name('store');
     Route::post('/searh', 'searh')->name('searh');
-    Route::put('/update/{id}', 'update')->name('update');
-    Route::delete('/destroy/{id}', 'destroy')->name('destroy');
+    Route::post('/update/{id}', 'update')->name('update');
+    Route::delete('/{id}', 'destroy')->name('destroy');
 });
 
 

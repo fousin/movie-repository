@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('filmes/create',[FilmeController::class, 'create']);
+Route::get('filmes/show/{id}',[FilmeController::class, 'show']);
 Route::get('filmes/edit/{id}',[FilmeController::class, 'edit']);
 
 require __DIR__.'/auth.php';

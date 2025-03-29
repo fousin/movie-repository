@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ArquivoService;
 use App\Services\FilmeService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -10,8 +11,10 @@ use Str;
 
 class FilmeController extends Controller
 {
-    public function __construct(protected FilmeService $service)
-    {
+    public function __construct(
+        protected FilmeService $service,
+        protected ArquivoService $arquivoService,
+    ) {
     }
 
 
@@ -33,11 +36,13 @@ class FilmeController extends Controller
     public function show($id)
     {
         try {
-            $filmes = $this->service->getOne($id);
+            $filme = $this->service->getOne($id);
         } catch (\Exception $e) {
             return redirect()->route('filmes.index');
         }
-        return Inertia::render('Filmes/show', ['filmes' => $filmes]);
+
+        $filme->url_filme = env('APP_URL') . '/storage/' . $filme->url_filme;
+        return Inertia::render('Filmes/Show', ['filme' => $filme]);
     }
 
     public function edit(int $id)
@@ -50,13 +55,24 @@ class FilmeController extends Controller
         return Inertia::render('Filmes/create', ['filmes' => $filmes]);
     }
 
+    public function getAllPaginated($page, $size)
+    {
+        try {
+            $filmes = $this->service->getAllPaginated($page, $size);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage(), 'mensagem' => 'Erro ao buscar filmes']);
+        }
+
+        return response()->json(['filmes' => $filmes]);
+    }
 
     public function store(Request $request)
     {
         // Validação dos dados
         $dados = $request->validate([
             'titulo' => 'required|string|max:255',
-            'sinopse' => 'required|string',
+            'sinopse' => 'nullable|string',
             'capa' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'video' => 'required|file|mimes:mp4,mkv,avi,flv|max:3072000', // Limite de 3GB
         ]);
@@ -65,6 +81,12 @@ class FilmeController extends Controller
             $videoName = Str::random(10) . '.' . $request->file('video')->getClientOriginalExtension();
             $videoPath = $request->file('video')->storeAs('videos', $videoName, 'public');
             $dados['url_filme'] = $videoPath;
+
+            $this->arquivoService->store([
+                'name' => $videoName,
+                'url' => $videoPath,
+                'type' => 'video',
+            ]);
         } else {
             return response()->json(['error' => 'Arquivo de vídeo inválido ou não enviado'], 400);
         }
@@ -73,6 +95,13 @@ class FilmeController extends Controller
             $capaName = Str::random(10) . '.' . $request->file('capa')->getClientOriginalExtension();
             $capaPath = $request->file('capa')->storeAs('capas', $capaName, 'public');
             $dados['url_capa'] = $capaPath;
+
+            $this->arquivoService->store([
+                'name' => $capaName,
+                'url' => $capaPath,
+                'type' => 'capa',
+            ]);
+
         } else {
             return response()->json(['error' => 'Arquivo de vídeo inválido ou não enviado'], 400);
         }
@@ -91,7 +120,7 @@ class FilmeController extends Controller
     {
         $dados = $request->validate([
             'titulo' => 'required|string|max:255',
-            'sinopse' => 'required|string',
+            'sinopse' => 'nullable|string',
             'capa' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
             'video' => 'nullable|file|mimes:mp4,mkv,avi,flv|max:3072000', // Limite de 3GB
         ]);
@@ -105,9 +134,17 @@ class FilmeController extends Controller
         if ($request->hasFile('video') && $request->file('video')->isValid()) {
             // Remover o vídeo antigo 
             Storage::disk('public')->delete($filme->url_filme);
+
             $videoName = Str::random(10) . '.' . $request->file('video')->getClientOriginalExtension();
             $videoPath = $request->file('video')->storeAs('videos', $videoName, 'public');
             $dados['url_filme'] = $videoPath;
+            
+            $this->arquivoService->store([
+                'name' => $videoName,
+                'url' => $videoPath,
+                'type' => 'video',
+            ]);
+
         }
 
         if ($request->hasFile('capa') && $request->file('capa')->isValid()) {
@@ -116,6 +153,12 @@ class FilmeController extends Controller
             $capaName = Str::random(10) . '.' . $request->file('capa')->getClientOriginalExtension();
             $capaPath = $request->file('capa')->storeAs('capas', $capaName, 'public');
             $dados['url_capa'] = $capaPath;
+
+            $this->arquivoService->store([
+                'name' => $capaName,
+                'url' => $capaPath,
+                'type' => 'capa',
+            ]);
         }
 
         try {
@@ -138,17 +181,7 @@ class FilmeController extends Controller
         return redirect()->route('filmes.index');
     }
 
-    public function getAllPaginated($page, $size)
-    {
-        try {
-            $filmes = $this->service->getAllPaginated($page, $size);
 
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage(), 'mensagem' => 'Erro ao buscar filmes']);
-        }
-
-        return response()->json(['filmes' => $filmes]);
-    }
 
     public function search(Request $request)
     {

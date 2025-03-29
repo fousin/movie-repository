@@ -1,7 +1,8 @@
 import { Filme } from "@/types/Types";
-import { usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import {Link} from "@inertiajs/react";
 
 export default function Index() {
     const page = usePage();
@@ -9,6 +10,7 @@ export default function Index() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [size, setSize] = useState(50);
+
 
     useEffect(() => {
         // console.log('page.filmes', page.props.filmes);
@@ -30,14 +32,15 @@ export default function Index() {
     }
 
     useEffect(() => {
-        // console.log('currentPage', currentPage);
         getFilmes(currentPage);
     }, [currentPage]);
 
     return (
         <div className="min-h-screen bg-gray-100">
+            <Head title="Index" />
+
             {/* Navbar */}
-            <nav className="bg-blue-600 text-white p-4 shadow-md w-full top-0 flex justify-between items-center">
+            <nav className="bg-black text-white p-4 shadow-md w-full top-0 flex justify-between items-center">
                 <div className="container mx-auto text-lg font-semibold">MyFilmes Server</div>
                 <div className="flex space-x-4">
                     <a href="/register" className="hover:text-blue-300 whitespace-nowrap">Registre-se</a>
@@ -47,25 +50,34 @@ export default function Index() {
 
             <div className="container mx-auto mt-20 p-4 4">
                 <div className="bg-white shadow-md rounded-lg overflow-hidden grid grid-cols-5 gap-">
-                    {filmes.map((filme: Filme) => (
-                        <div key={filme.id} className="container mx-auto mt-10 p-4 flex flex-col items-center">
-                            <div className="relative w-64 h-96 group">
-                                {/* Imagem da capa */}
-                                <img
-                                    src={filme.url_capa}
-                                    alt={`Capa de ${filme.titulo}`}
-                                    className="w-full h-full object-cover rounded-lg shadow-lg"
-                                />
-                                {/* Sobreposição com sinopse ao passar o mouse */}
-                                <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg p-4">
-                                    <span className="text-white text-sm">{filme.sinopse}</span>
-                                </div>
-                            </div>
-                            {/* Título do filme */}
-                            <h3 className="mt-2 text-lg font-semibold text-center">{filme.titulo}</h3>
-                        </div>
 
-                    ))}
+                    {filmes.length > 0 ? (
+                        filmes.map((filme: Filme) => (
+                            <Link href={`/filmes/show/${filme.id}`} key={filme.id} className="block">
+                                <div className="container mx-auto mt-10 p-4 flex flex-col items-center">
+                                    <div className="relative w-64 h-96 group">
+                                        {/* Imagem da capa */}
+                                        <img
+                                            src={filme.url_capa}
+                                            alt={`Capa de ${filme.titulo}`}
+                                            className="w-full h-full object-cover rounded-lg shadow-lg"
+                                        />
+                                        {/* Sobreposição com sinopse ao passar o mouse */}
+                                        <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg p-4">
+                                            <span className="text-white text-sm">{filme.sinopse}</span>
+                                        </div>
+                                    </div>
+                                    {/* Título do filme */}
+                                    <h3 className="mt-2 text-lg font-semibold text-center">{filme.titulo}</h3>
+                                </div>
+                            </Link>
+                        ))
+                    ) : (
+                        <div className="col-span-5 flex justify-center items-center h-64">
+                            <p className="text-gray-500 text-lg">Nenhum filme encontrado.</p>
+                        </div>
+                    )}
+
                 </div>
                 {totalPages > 0 && (
                     <div className="flex justify-center mt-8 col-span-5">

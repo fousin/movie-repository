@@ -56,97 +56,40 @@ export default function Dashboard() {
         }
     };
 
-    // const handleSubmit = async (event: React.FormEvent) => {
-    //     event.preventDefault();
-
-    //     if (!videoFile || !capaFile) {
-    //         alert("Por favor, selecione um arquivo de vídeo e uma capa.");
-    //         return;
-    //     }
-
-    //     const formData = new FormData();
-    //     formData.append('titulo', filme.titulo);
-    //     formData.append('sinopse', filme.sinopse);
-    //     formData.append('capa', capaFile);
-    //     formData.append('video', videoFile);
-    //     setLoading(true);
-    //     if (filme.id > 0) {
-    //         try {
-    //             await axios.post(`/api/filmes/update/${filme.id}`, formData, {
-    //                 headers: {
-    //                     'Content-Type': 'multipart/form-data',
-    //                 },
-    //                 onUploadProgress: (progressEvent: ProgressEvent) => {
-    //                     if (progressEvent.total) {
-    //                         const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-    //                         setUploadProgress(progress);
-    //                     }
-    //                 },
-    //             });
-
-    //             setLoading(false);
-    //             alert('Filme cadastrado com sucesso!');
-    //             getFilmes(1);
-    //             setIsOpen(false);
-
-    //         } catch (error) {
-    //             setLoading(false);
-    //             alert('Erro ao cadastrar o filme. Tente novamente.');
-    //         }
-    //     } else {
-    //         try {
-    //             await axios.post('/api/filmes/store', formData, {
-    //                 headers: {
-    //                     'Content-Type': 'multipart/form-data',
-    //                 },
-    //                 onUploadProgress: (progressEvent: ProgressEvent) => {
-    //                     if (progressEvent.total) {
-    //                         const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-    //                         setUploadProgress(progress);
-    //                     }
-    //                 },
-    //             });
-
-    //             setLoading(false);
-    //             alert('Filme cadastrado com sucesso!');
-    //             getFilmes(1);
-    //             setIsOpen(false);
-
-    //         } catch (error) {
-    //             setLoading(false);
-    //             alert('Erro ao cadastrar o filme. Tente novamente.');
-    //         }
-    //     }
-
-    // };
-
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        if (!filme.titulo || !filme.sinopse) {
+        if (!filme.titulo) {
             alert("Por favor, preencha todos os campos.");
             return;
         }
 
-        if (!videoFile || !capaFile) {
-            alert("Por favor, selecione um arquivo de vídeo e uma capa.");
-            return;
+        if (!filme.id) {
+            if (!videoFile ) {
+                alert("Por favor, selecione um arquivo de vídeo e uma capa.");
+                return;
+            }
         }
 
         const formData = new FormData();
         formData.append("titulo", filme.titulo);
         formData.append("sinopse", filme.sinopse);
-        formData.append("capa", capaFile);
-        formData.append("video", videoFile);
+
+        if (capaFile instanceof File) {
+            formData.append("capa", capaFile);
+        }
+
+        if (videoFile instanceof File) {
+            formData.append("video", videoFile);
+        }
 
         setLoading(true);
 
         try {
-            const url = filme.id ? `/api/filmes/${filme.id}` : "/api/filmes/store";
-            const method = filme.id ? "put" : "post";
+            const url = filme.id ? `/api/filmes/update/${filme.id}` : "/api/filmes/store";
 
             await axios({
-                method: method as "post" | "put", // Tipagem explícita do método
+                method: "post", // Tipagem explícita do método
                 url: url,
                 data: formData,
                 headers: { "Content-Type": "multipart/form-data" },
@@ -170,6 +113,7 @@ export default function Dashboard() {
     };
 
     const editarFilme = async (filme: Filme) => {
+        console.log('filme asdsa', filme)
         setFilme(filme);
         setIsOpen(true);
         setVideoFile(null);
@@ -217,9 +161,9 @@ export default function Dashboard() {
                                                 <td className="px-4 py-2">{filme.titulo}</td>
                                                 <td className="px-4 py-2">{filme.url_filme}</td>
                                                 <td className="px-4 py-2">
-                                                    <span className='cursor-pointer' onClick={(e) => editarFilme(filme)}>edit</span>
+                                                    <span className='cursor-pointer' onClick={(e) => editarFilme(filme)}>editar</span>
                                                     |
-                                                    <span className='cursor-pointer' onClick={(e) => deleteFilme(filme.id)}>delete</span>
+                                                    <span className='cursor-pointer' onClick={(e) => deleteFilme(filme.id)}>deletar</span>
                                                 </td>
                                             </tr>
                                         ))
@@ -272,37 +216,6 @@ export default function Dashboard() {
                                 </div>
                             )}
 
-                            {/* <div className="flex justify-center mt-4">
-                                <nav className="inline-flex space-x-2">
-                                    {currentPage > 1 && (
-                                        <button
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                            onClick={() => setCurrentPage(currentPage - 1)}
-                                        >
-                                            Anterior
-                                        </button>
-                                    )}
-
-                                    {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
-                                        <button
-                                            key={pageNumber}
-                                            className={`px-4 py-2 rounded-md ${currentPage === pageNumber ? 'bg-blue-600 text-white' : 'bg-white text-blue-600'}`}
-                                            onClick={() => setCurrentPage(pageNumber)}
-                                        >
-                                            {pageNumber}
-                                        </button>
-                                    ))}
-
-                                    {currentPage < totalPages && (
-                                        <button
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                            onClick={() => setCurrentPage(currentPage + 1)}
-                                        >
-                                            Próxima
-                                        </button>
-                                    )}
-                                </nav>
-                            </div> */}
                         </div>
                     </div>
                 </div>
@@ -341,7 +254,6 @@ export default function Dashboard() {
                                                 onChange={(e) => setFilme({ ...filme, sinopse: e.target.value })}
                                                 className="w-full p-2 border border-gray-300 rounded-md"
                                                 rows={4}
-                                                required
                                             />
                                         </div>
 
@@ -353,7 +265,6 @@ export default function Dashboard() {
                                                 onChange={(e) => handleFileChange(e, setCapaFile)}
                                                 accept="image/*"
                                                 className="w-full p-2 border border-gray-300 rounded-md"
-                                                required
                                             />
                                         </div>
 
@@ -365,7 +276,7 @@ export default function Dashboard() {
                                                 onChange={(e) => handleFileChange(e, setVideoFile)}
                                                 accept="video/*"
                                                 className="w-full p-2 border border-gray-300 rounded-md"
-                                                required
+                                                required={filme.id > 0 ? false : true}
                                             />
                                         </div>
 
