@@ -73,42 +73,46 @@ class FilmeController extends Controller
         $dados = $request->validate([
             'titulo' => 'required|string|max:255',
             'sinopse' => 'nullable|string',
-            'capa' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'capa' => 'nullable|file|mimes:jpg,jpeg,png|max:8192',
             'video' => 'required|file|mimes:mp4,mkv,avi,flv|max:3072000', // Limite de 3GB
         ]);
 
-        if ($request->hasFile('video') && $request->file('video')->isValid()) {
-            $videoName = Str::random(10) . '.' . $request->file('video')->getClientOriginalExtension();
-            $videoPath = $request->file('video')->storeAs('videos', $videoName, 'public');
-            $dados['url_filme'] = $videoPath;
-
-            $this->arquivoService->store([
-                'name' => $videoName,
-                'url' => $videoPath,
-                'type' => 'video',
-            ]);
-        } else {
-            return response()->json(['error' => 'Arquivo de vídeo inválido ou não enviado'], 400);
-        }
-
-        if ($request->hasFile('capa') && $request->file('capa')->isValid()) {
-            $capaName = Str::random(10) . '.' . $request->file('capa')->getClientOriginalExtension();
-            $capaPath = $request->file('capa')->storeAs('capas', $capaName, 'public');
-            $dados['url_capa'] = $capaPath;
-
-            $this->arquivoService->store([
-                'name' => $capaName,
-                'url' => $capaPath,
-                'type' => 'capa',
-            ]);
-
-        } else {
-            return response()->json(['error' => 'Arquivo de vídeo inválido ou não enviado'], 400);
-        }
-
         try {
+
+            if ($request->hasFile('video') && $request->file('video')->isValid()) {
+                $videoName = Str::random(10) . '.' . $request->file('video')->getClientOriginalExtension();
+                $videoPath = $request->file('video')->storeAs('videos', $videoName, 'public');
+                $dados['url_filme'] = $videoPath;
+
+                $this->arquivoService->store([
+                    'name' => $videoName,
+                    'url' => $videoPath,
+                    'type' => 'video',
+                ]);
+
+            } else {
+                return response()->json(['error' => 'Arquivo de vídeo inválido ou não enviado'], 400);
+            }
+
+            if ($request->hasFile('capa') && $request->file('capa')->isValid()) {
+                $capaName = Str::random(10) . '.' . $request->file('capa')->getClientOriginalExtension();
+                $capaPath = $request->file('capa')->storeAs('capas', $capaName, 'public');
+                $dados['url_capa'] = $capaPath;
+
+                try {
+                    $arquivo_capa = $this->arquivoService->store([
+                        'name' => $capaName,
+                        'url' => $capaPath,
+                        'type' => 'capa',
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::error("Erro ao salvar capa no banco: " . $e->getMessage());
+                }
+            }
+
             $this->service->store($dados);
         } catch (\Exception $e) {
+            Storage::disk('public')->delete($videoPath ?? '');
             return response()->json(['error' => $e->getMessage(), 'mensagem' => 'Erro ao cadastrar filme'], 500);
         }
 
@@ -121,7 +125,7 @@ class FilmeController extends Controller
         $dados = $request->validate([
             'titulo' => 'required|string|max:255',
             'sinopse' => 'nullable|string',
-            'capa' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'capa' => 'nullable|file|mimes:jpg,jpeg,png|max:8192',
             'video' => 'nullable|file|mimes:mp4,mkv,avi,flv|max:3072000', // Limite de 3GB
         ]);
 
@@ -138,7 +142,7 @@ class FilmeController extends Controller
             $videoName = Str::random(10) . '.' . $request->file('video')->getClientOriginalExtension();
             $videoPath = $request->file('video')->storeAs('videos', $videoName, 'public');
             $dados['url_filme'] = $videoPath;
-            
+
             $this->arquivoService->store([
                 'name' => $videoName,
                 'url' => $videoPath,

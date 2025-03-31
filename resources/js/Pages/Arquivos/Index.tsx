@@ -33,7 +33,8 @@ export default function Arquivos() {
     }, [currentPage]);
 
     const getFiles = async (page: number) => {
-        axios.get(`/api/arquivos/all/${page}/${size}`).then((response) => {
+        // axios.get(`/api/arquivos/all/${page}/${size}`).then((response) => {
+        axios.get(route('arquivos.all', { page: page, size: size })).then((response) => {
             setArquivos(response.data.arquivos.data);
             setTotalPages(response.data.arquivos.last_page);
         }).catch((error) => {
@@ -96,7 +97,7 @@ export default function Arquivos() {
 
             setLoading(false);
             alert(arquivo.id ? "Arquivo atualizado com sucesso!" : "Arquivo cadastrado com sucesso!");
-            getFiles(1); 
+            getFiles(1);
             setIsOpen(false);
             setArquivo({});
 
@@ -160,9 +161,10 @@ export default function Arquivos() {
                             </table>
 
                             {/* Paginação */}
-                            {totalPages > 1 && (
-                                <div className="flex justify-center mt-8">
+                            {totalPages > 0 && (
+                                <div className="flex justify-center mt-8 col-span-5">
                                     <nav className="inline-flex space-x-2">
+                                        {/* Botão de Página Anterior */}
                                         <button
                                             className={`px-4 py-2 rounded-md ${currentPage === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
                                             onClick={() => setCurrentPage(currentPage - 1)}
@@ -171,6 +173,7 @@ export default function Arquivos() {
                                             Anterior
                                         </button>
 
+                                        {/* Páginas visíveis */}
                                         <button
                                             className={`px-4 py-2 rounded-md ${currentPage === currentPage ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-100'}`}
                                             onClick={() => setCurrentPage(currentPage)}
@@ -185,8 +188,9 @@ export default function Arquivos() {
                                             >
                                                 {currentPage + 1}
                                             </button>
-                                        )}
 
+                                        )}
+                                        {/* Botão de Próxima Página */}
                                         <button
                                             className={`px-4 py-2 rounded-md ${currentPage === totalPages ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
                                             onClick={() => setCurrentPage(currentPage + 1)}
@@ -216,6 +220,7 @@ export default function Arquivos() {
                                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                     required
                                 >
+                                    <option value="">Selecione</option>
                                     <option value="capas">Capa</option>
                                     <option value="videos">Video</option>
                                 </select>
@@ -227,7 +232,7 @@ export default function Arquivos() {
                                     type="file"
                                     onChange={(e) => handleFileChange(e, setNewFile)}
                                     className="mt-1 block w-full text-sm text-gray-700"
-                                    accept="video/*"
+                                    accept="video/*,image/*"
                                 />
                             </div>
                             {loading && (

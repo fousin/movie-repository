@@ -17,7 +17,7 @@ export default function Show() {
                 <title>{filme ? filme.titulo : 'Carregando...'}</title>
             </Head>
 
-            <div className="min-h-screen bg-gray-100">
+            <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
                 <nav className="bg-black text-white p-4 shadow-md w-full top-0 flex justify-between items-center">
                     <div className="container mx-auto text-lg font-semibold">MyFilmes Server</div>
                     <div className="flex space-x-4">
@@ -45,7 +45,7 @@ export default function Show() {
 
 
                                 {/* Movie Details */}
-                                <div className="p-4">
+                                <div className="p-4 dark:bg-gray-800 dark:text-white">
                                     <h1 className="text-2xl font-semibold mb-2">{filme.titulo}</h1>
                                     <p className="text-gray-700 mb-4">{filme.sinopse}</p>
                                 </div>

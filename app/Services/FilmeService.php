@@ -14,7 +14,7 @@ class FilmeService
     {
         $filmes = $this->filmeDB->paginate($size, ['*'], 'page', $page);
         foreach($filmes as $filme) {
-            $filme->url_capa = env('APP_URL') . '/storage/' . $filme->url_capa;
+            $filme->url_capa = env('APP_URL') . '/storage/' . ($filme->url_capa ?? 'capas/Bve01NK3sP.jpg');
             $filme->url_filme = env('APP_URL') . '/storage/' . $filme->url_filme;
         }
         return $filmes;

@@ -36,7 +36,7 @@ export default function Index() {
     }, [currentPage]);
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
             <Head title="Index" />
 
             {/* Navbar */}
@@ -48,8 +48,8 @@ export default function Index() {
                 </div>
             </nav>
 
-            <div className="container mx-auto mt-20 p-4 4">
-                <div className="bg-white shadow-md rounded-lg overflow-hidden grid grid-cols-5 gap-">
+            <div className="container mx-auto mt-20 p-4 ">
+                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden grid grid-cols-5 gap-4">
 
                     {filmes.length > 0 ? (
                         filmes.map((filme: Filme) => (
