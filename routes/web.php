@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArquivoController;
 use App\Http\Controllers\FilmeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -25,10 +26,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/arquivos', [ArquivoController::class, 'index'])->name('arquivos.index');
+    Route::get('filmes/create', [FilmeController::class, 'create']);
+    Route::get('filmes/show/{id}', [FilmeController::class, 'show']);
+    Route::get('filmes/edit/{id}', [FilmeController::class, 'edit']);
 });
 
-Route::get('filmes/create',[FilmeController::class, 'create']);
-Route::get('filmes/show/{id}',[FilmeController::class, 'show']);
-Route::get('filmes/edit/{id}',[FilmeController::class, 'edit']);
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

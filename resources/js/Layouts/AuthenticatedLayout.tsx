@@ -33,6 +33,13 @@ export default function Authenticated({
                                 >
                                     Dashboard
                                 </NavLink>
+
+                                <NavLink
+                                    href={route('arquivos.index')}
+                                    active={route().current('arquivos.index')}
+                                >
+                                    Arquivos
+                                </NavLink>
                             </div>
                         </div>
 

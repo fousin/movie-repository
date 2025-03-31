@@ -5,3 +5,11 @@ export type Filme ={
     url_capa: string;
     url_filme: string;
 }
+
+export type Arquivo = {
+    id?: number;
+    name?: string;
+    url?: string;
+    type?: string;
+    created_at?: string;
+}

@@ -2,7 +2,7 @@ import { Filme } from "@/types/Types";
 import { Head, usePage } from "@inertiajs/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {Link} from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 
 export default function Index() {
     const page = usePage();
@@ -119,7 +119,6 @@ export default function Index() {
                         </nav>
                     </div>
                 )}
-
 
             </div>
 

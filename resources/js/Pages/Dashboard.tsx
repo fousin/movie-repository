@@ -89,7 +89,7 @@ export default function Dashboard() {
             const url = filme.id ? `/api/filmes/update/${filme.id}` : "/api/filmes/store";
 
             await axios({
-                method: "post", // Tipagem explícita do método
+                method: "post", 
                 url: url,
                 data: formData,
                 headers: { "Content-Type": "multipart/form-data" },
@@ -161,9 +161,9 @@ export default function Dashboard() {
                                                 <td className="px-4 py-2">{filme.titulo}</td>
                                                 <td className="px-4 py-2">{filme.url_filme}</td>
                                                 <td className="px-4 py-2">
-                                                    <span className='cursor-pointer' onClick={(e) => editarFilme(filme)}>editar</span>
+                                                    <span className='cursor-pointer p-2 hover:underline' onClick={(e) => editarFilme(filme)}>editar</span>
                                                     |
-                                                    <span className='cursor-pointer' onClick={(e) => deleteFilme(filme.id)}>deletar</span>
+                                                    <span className='cursor-pointer p-2 hover:underline' onClick={(e) => deleteFilme(filme.id)}>deletar</span>
                                                 </td>
                                             </tr>
                                         ))
