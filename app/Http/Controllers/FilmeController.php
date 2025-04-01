@@ -186,7 +186,6 @@ class FilmeController extends Controller
     }
 
 
-
     public function search(Request $request)
     {
         $dados = $request->only('search');
