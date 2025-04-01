@@ -137,7 +137,7 @@ class FilmeController extends Controller
 
         if ($request->hasFile('video') && $request->file('video')->isValid()) {
             // Remover o vídeo antigo 
-            Storage::disk('public')->delete($filme->url_filme);
+            Storage::disk('public')->delete($filme->url_filme ?? '');
 
             $videoName = Str::random(10) . '.' . $request->file('video')->getClientOriginalExtension();
             $videoPath = $request->file('video')->storeAs('videos', $videoName, 'public');
@@ -153,7 +153,7 @@ class FilmeController extends Controller
 
         if ($request->hasFile('capa') && $request->file('capa')->isValid()) {
             // Remover a capa antiga 
-            Storage::disk('public')->delete($filme->url_capa);
+            Storage::disk('public')->delete($filme->url_capa ?? '');
             $capaName = Str::random(10) . '.' . $request->file('capa')->getClientOriginalExtension();
             $capaPath = $request->file('capa')->storeAs('capas', $capaName, 'public');
             $dados['url_capa'] = $capaPath;
