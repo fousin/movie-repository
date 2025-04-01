@@ -28,10 +28,10 @@ A aplicação foi construída como um monólito utilizando Laravel no backend e 
 6. gerar o build do node ou iniciar o servidor node de dev (npm run build ou npm run dev)
 
 # Sobre os endpoints da aplicação que possuem uma view
-[GET] / - pagina de listagem dos videos/filmes ja cadastrados
-[GET] /filmes/show/{id} - pagina de exibição do videos/filmes
-[GET] /register - possui o form de cadastro 
-[GET] /dashboard - pagina de listagem, cadastro, atualização e exclusão dos videos/filmes
-[GET] /arquivos - pagina de listagem, cadastro e exclusão de arquivos no geral, videos/filmes ou imagem
+- [GET] / - pagina de listagem dos videos/filmes ja cadastrados
+- [GET] /filmes/show/{id} - pagina de exibição do videos/filmes
+- [GET] /register - possui o form de cadastro 
+- [GET] /dashboard - pagina de listagem, cadastro, atualização e exclusão dos videos/filmes
+- [GET] /arquivos - pagina de listagem, cadastro e exclusão de arquivos no geral, videos/filmes ou imagem
 
 
