@@ -28,6 +28,16 @@ class FilmeController extends Controller
         return Inertia::render('Filmes/Index', ['filmes' => $filmes]);
     }
 
+    public function dashboard(){
+        try {
+            $filmes = $this->service->getAllPaginated(1, 20);
+        } catch (\Exception $e) {
+            return redirect()->route('filmes.index');
+        }
+
+        return Inertia::render('Dashboard', ['filmes' => $filmes]);
+    }
+
     public function create()
     {
         return Inertia::render('Filmes/Create');

@@ -41,7 +41,7 @@ export default function Index() {
 
             {/* Navbar */}
             <nav className="bg-black text-white p-4 shadow-md w-full top-0 flex justify-between items-center">
-                <div className="container mx-auto text-lg font-semibold">MyFilmes Server</div>
+                <div className="container mx-auto text-lg font-semibold"><a href="/">MyFilmes Server</a></div>
                 <div className="flex space-x-4">
                     <a href="/register" className="hover:text-blue-300 whitespace-nowrap">Registre-se</a>
                     <a href="/login" className="hover:text-blue-300 whitespace-nowrap">Login</a>
@@ -49,7 +49,7 @@ export default function Index() {
             </nav>
 
             <div className="container mx-auto mt-20 p-4 ">
-                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden grid grid-cols-5 gap-4">
+                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-4">
 
                     {filmes.length > 0 ? (
                         filmes.map((filme: Filme) => (

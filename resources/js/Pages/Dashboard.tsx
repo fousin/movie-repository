@@ -1,10 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Filme } from '@/types/Types';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import axios, { AxiosProgressEvent } from 'axios';
 import { useEffect, useState } from 'react';
 
 export default function Dashboard() {
+    const page = usePage();
     const [filmes, setFilmes] = useState<Filme[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
@@ -33,8 +34,19 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
+        console.log('currentPage', currentPage);
         getFilmes(currentPage);
     }, [currentPage]);
+
+    useEffect(() => {
+        // console.log('page.filmes', page.props.filmes);
+        //@ts-ignore
+        setFilmes(page.props.filmes.data);
+        //@ts-ignore
+        setCurrentPage(page.props.filmes.current_page);
+        //@ts-ignore
+        setTotalPages(page.props.filmes.last_page);
+    }, []);
 
     const deleteFilme = async (id: number) => {
         if (confirm('Tem certeza que deseja excluir este filme?')) {
