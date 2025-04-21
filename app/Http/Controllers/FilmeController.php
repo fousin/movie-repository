@@ -28,7 +28,8 @@ class FilmeController extends Controller
         return Inertia::render('Filmes/Index', ['filmes' => $filmes]);
     }
 
-    public function dashboard(){
+    public function dashboard()
+    {
         try {
             $filmes = $this->service->getAllPaginated(1, 20);
         } catch (\Exception $e) {
@@ -95,6 +96,7 @@ class FilmeController extends Controller
                 $dados['url_filme'] = $videoPath;
 
                 $this->arquivoService->store([
+                    'original_name' => $request->file('video')->getClientOriginalName(),
                     'name' => $videoName,
                     'url' => $videoPath,
                     'type' => 'video',
@@ -111,6 +113,7 @@ class FilmeController extends Controller
 
                 try {
                     $arquivo_capa = $this->arquivoService->store([
+                        'original_name' => $request->file('video')->getClientOriginalName(),
                         'name' => $capaName,
                         'url' => $capaPath,
                         'type' => 'capa',
@@ -154,6 +157,8 @@ class FilmeController extends Controller
             $dados['url_filme'] = $videoPath;
 
             $this->arquivoService->store([
+                'original_name' => $request->file('video')->getClientOriginalName(),
+
                 'name' => $videoName,
                 'url' => $videoPath,
                 'type' => 'video',
@@ -169,6 +174,7 @@ class FilmeController extends Controller
             $dados['url_capa'] = $capaPath;
 
             $this->arquivoService->store([
+                'original_name' => $request->file('video')->getClientOriginalName(),
                 'name' => $capaName,
                 'url' => $capaPath,
                 'type' => 'capa',

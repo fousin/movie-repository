@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('arquivos', function (Blueprint $table) {
             $table->id();
+            $table->string('original_name');
             $table->string('name');
             $table->string('url');
             $table->string('type');

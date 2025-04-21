@@ -8,8 +8,9 @@ import NavBar from "@/Components/NavBar";
 export default function Index() {
     const page = usePage();
     const [filmes, setFilmes] = useState<Filme[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    // todo: adicionar opção de tamanho de página
     const [size, setSize] = useState(50);
 
 

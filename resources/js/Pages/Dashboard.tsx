@@ -9,6 +9,7 @@ export default function Dashboard() {
     const [filmes, setFilmes] = useState<Filme[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
+    // todo: adicionar opção de tamanho de página
     const [size, setSize] = useState<number>(20);
     const [loading, setLoading] = useState<boolean>(false);
     const [videoFile, setVideoFile] = useState<File | null>(null);

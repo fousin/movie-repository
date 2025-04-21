@@ -60,7 +60,7 @@ class ArquivoController extends Controller
         $dados['url_capa'] = $filePath;
 
         try {
-            $this->service->store(['name' => $fileName, 'url' => $filePath, 'type' => $dados['type'] ]);
+            $this->service->store(['name' => $fileName, 'url' => $filePath, 'type' => $dados['type'], 'original_name' => $request->file('file')->getClientOriginalName()]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Erro ao salvar o arquivo',
