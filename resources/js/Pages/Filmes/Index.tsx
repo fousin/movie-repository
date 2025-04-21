@@ -3,6 +3,7 @@ import { Head, usePage } from "@inertiajs/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "@inertiajs/react";
+import NavBar from "@/Components/NavBar";
 
 export default function Index() {
     const page = usePage();
@@ -40,13 +41,7 @@ export default function Index() {
             <Head title="Index" />
 
             {/* Navbar */}
-            <nav className="bg-black text-white p-4 shadow-md w-full top-0 flex justify-between items-center">
-                <div className="container mx-auto text-lg font-semibold"><a href="/">MyFilmes Server</a></div>
-                <div className="flex space-x-4">
-                    <a href="/register" className="hover:text-blue-300 whitespace-nowrap">Registre-se</a>
-                    <a href="/login" className="hover:text-blue-300 whitespace-nowrap">Login</a>
-                </div>
-            </nav>
+            <NavBar />
 
             <div className="container mx-auto mt-20 p-4 ">
                 <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-4">

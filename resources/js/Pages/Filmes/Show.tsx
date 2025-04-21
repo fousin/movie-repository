@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Head, usePage } from "@inertiajs/react";
 import { Filme } from "@/types/Types";
+import NavBar from "@/Components/NavBar";
 
 export default function Show() {
     const page = usePage();
@@ -18,13 +19,7 @@ export default function Show() {
             </Head>
 
             <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-                <nav className="bg-black text-white p-4 shadow-md w-full top-0 flex justify-between items-center">
-                    <div className="container mx-auto text-lg font-semibold"><a href="/">MyFilmes Server</a></div>
-                    <div className="flex space-x-4">
-                        <a href="/register" className="hover:text-blue-300 whitespace-nowrap">Registre-se</a>
-                        <a href="/login" className="hover:text-blue-300 whitespace-nowrap">Login</a>
-                    </div>
-                </nav>
+                <NavBar />
 
                 <div className="container mx-auto mt-20 p-4">
                     <a href="/">Voltar</a>
