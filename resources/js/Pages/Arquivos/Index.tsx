@@ -19,7 +19,6 @@ export default function Arquivos() {
     // const [capaFile, setCapaFile] = useState<File | null>(null);
 
     useEffect(() => {
-        console.log('page.arquivos', page.props.arquivos);
         //@ts-ignore
         setArquivos(page.props.arquivos.data);
         //@ts-ignore

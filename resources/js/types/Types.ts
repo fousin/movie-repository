@@ -13,3 +13,24 @@ export type Arquivo = {
     type?: string;
     created_at?: string;
 }
+
+export type User = {
+    id?: number;
+    name?: string;
+    email?: string;
+    permissoes?: Permissao[];
+}
+
+export type Role = {
+    id?: number;
+    name?: string;
+}
+
+export type Permissao = {
+    id?: number;
+    user?: User;
+    role?:Role;
+    user_id?: number | null;
+    role_id?: number;
+
+}

@@ -11,6 +11,7 @@ export default function Dashboard() {
     const [totalPages, setTotalPages] = useState<number>(1);
     // todo: adicionar opção de tamanho de página
     const [size, setSize] = useState<number>(20);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [videoFile, setVideoFile] = useState<File | null>(null);
     const [capaFile, setCapaFile] = useState<File | null>(null);
@@ -35,18 +36,19 @@ export default function Dashboard() {
     }
 
     useEffect(() => {
-        console.log('currentPage', currentPage);
         getFilmes(currentPage);
     }, [currentPage]);
 
     useEffect(() => {
-        // console.log('page.filmes', page.props.filmes);
+        
         //@ts-ignore
         setFilmes(page.props.filmes.data);
         //@ts-ignore
         setCurrentPage(page.props.filmes.current_page);
         //@ts-ignore
         setTotalPages(page.props.filmes.last_page);
+        //@ts-ignore
+        setIsAdmin(page.props.isAdmin);
     }, []);
 
     const deleteFilme = async (id: number) => {
@@ -163,7 +165,9 @@ export default function Dashboard() {
                                         <th className="px-4 py-2 text-left w-1/12">ID</th>
                                         <th className="px-4 py-2 text-left w-5/12">Titulo</th>
                                         <th className="px-4 py-2 text-left w-4/12">URL</th>
-                                        <th className="px-4 py-2 text-left w-3/12">Ações</th>
+                                        {isAdmin &&(
+                                            <th className="px-4 py-2 text-left w-3/12">Ações</th>
+                                        )}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -173,11 +177,13 @@ export default function Dashboard() {
                                                 <td className="px-4 py-2">{filme.id}</td>
                                                 <td className="px-4 py-2">{filme.titulo}</td>
                                                 <td className="px-4 py-2">{filme.url_filme}</td>
-                                                <td className="px-4 py-2">
+                                                {isAdmin &&(
+                                                    <td className="px-4 py-2">
                                                     <span className='cursor-pointer p-2 hover:underline' onClick={(e) => editarFilme(filme)}>editar</span>
                                                     |
                                                     <span className='cursor-pointer p-2 hover:underline' onClick={(e) => deleteFilme(filme.id)}>deletar</span>
                                                 </td>
+                                                )}
                                             </tr>
                                         ))
                                     ) : (

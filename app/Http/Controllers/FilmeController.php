@@ -31,12 +31,21 @@ class FilmeController extends Controller
     public function dashboard()
     {
         try {
+            $isAdmin = false;
+            $user = auth()->user()->load('permissoes.role');
+            foreach($user->permissoes as $permissao) {
+                if ($permissao->role->name == 'admin') {
+                    $isAdmin = true;
+                    break;
+                }
+            }
+
             $filmes = $this->service->getAllPaginated(1, 20);
         } catch (\Exception $e) {
             return redirect()->route('filmes.index');
         }
 
-        return Inertia::render('Dashboard', ['filmes' => $filmes]);
+        return Inertia::render('Dashboard', ['filmes' => $filmes, 'isAdmin' => $isAdmin]);
     }
 
     public function create()
@@ -52,7 +61,12 @@ class FilmeController extends Controller
             return redirect()->route('filmes.index');
         }
 
-        $filme->url_filme = env('APP_URL') . '/storage/' . $filme->url_filme;
+        $prod = env('APP_PROD');
+        if ($prod) {
+            $filme->url_filme = env('APP_PROD_URL') . '/storage/' . $filme->url_filme;
+        } else {
+            $filme->url_filme = env('APP_URL') . '/storage/' . $filme->url_filme;
+        }
         return Inertia::render('Filmes/Show', ['filme' => $filme]);
     }
 

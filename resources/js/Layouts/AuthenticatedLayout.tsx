@@ -10,7 +10,7 @@ export default function Authenticated({
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const user = usePage().props.auth.user;
-
+    const isAdmin = usePage()?.props?.isAdmin;
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
@@ -34,12 +34,23 @@ export default function Authenticated({
                                     Dashboard
                                 </NavLink>
 
-                                <NavLink
-                                    href={route('arquivos.index')}
-                                    active={route().current('arquivos.index')}
-                                >
-                                    Arquivos
-                                </NavLink>
+                                {isAdmin ? (
+                                    <>
+                                        <NavLink
+                                            href={route('arquivos.index')}
+                                            active={route().current('arquivos.index')}
+                                        >
+                                            Arquivos
+                                        </NavLink>
+
+                                        <NavLink
+                                            href={route('users.index')}
+                                            active={route().current('users.index')}
+                                        >
+                                            Users
+                                        </NavLink>
+                                    </>
+                                ) : null}
                             </div>
                         </div>
 

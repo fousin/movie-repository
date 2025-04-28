@@ -14,8 +14,14 @@ class FilmeService
     {
         $filmes = $this->filmeDB->paginate($size, ['*'], 'page', $page);
         foreach($filmes as $filme) {
-            $filme->url_capa = env('APP_URL') . '/storage/' . ($filme->url_capa ?? 'capas/default-capa.jpg');
-            $filme->url_filme = env('APP_URL') . '/storage/' . $filme->url_filme;
+            $prod = env('APP_PROD');
+            if($prod) {
+                $filme->url_capa = env('APP_PROD_URL') . '/storage/' . ($filme->url_capa ?? 'capas/default-capa.jpg');
+                $filme->url_filme = env('APP_PROD_URL') . '/storage/' . $filme->url_filme;
+            } else {
+                $filme->url_capa = env('APP_URL') . '/storage/' . ($filme->url_capa ?? 'capas/default-capa.jpg');
+                $filme->url_filme = env('APP_URL') . '/storage/' . $filme->url_filme;
+            }
         }
         return $filmes;
     }
